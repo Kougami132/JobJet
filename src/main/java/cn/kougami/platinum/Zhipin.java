@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class Zhipin {
     private String loginUrl = "https://www.zhipin.com/web/user/?ka=header-login";
-    private String baseUrl = "https://www.zhipin.com/web/geek/job?scale=301,302,303,304&query=%s&city=%s&page=";
+    private String baseUrl = "https://www.zhipin.com/web/geek/job?scale=301,302,303,304&experience=108,102,101,103&degree=202,203&query=%s&city=%s&page=";
     private List<String> blackList;
     private ChromeDriver driver;
     private WebDriverWait webDriverWait;
@@ -31,7 +31,7 @@ public class Zhipin {
         login();
         for (int page = 1; page <= 10; page ++)
             if (!chat(baseUrl + page)) break;
-        log.info("今日沟通人数已达上限，请明天再试");
+        log.info("打招呼结束");
         driver.close();
     }
 
@@ -54,9 +54,13 @@ public class Zhipin {
             if (button.getText().equals("立即沟通")) {
                 button.click();
                 wait("dialog-con");
-                if (find("dialog-con").getText().contains("已达上限")) return false;
+                if (find("dialog-con").getText().contains("已达上限")) {
+                    log.info("今日沟通人数已达上限，请明天再试");
+                    return false;
+                }
 
-                String com = findBatch("company-info").get(1).getText();
+                List<WebElement> companyName = findBatch("company-info");
+                String com = companyName.size() > 1 ? companyName.get(1).getText() : "代招";
                 String title = find("name").getText();
                 log.info("已投递 {} | {}", com, title);
                 Thread.sleep(1500);
