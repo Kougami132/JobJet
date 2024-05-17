@@ -43,7 +43,7 @@ public class Zhipin {
         List<String> list = new ArrayList<>();
         findBatch("job-card-body").forEach(o -> {
             // 检查黑名单
-            if (!isInBlackList(find(o, "company-name").getText()))
+            if (!isInBlackList(o.getText()))
                 list.add(find(o, "job-card-left").getAttribute("href"));
         });
 

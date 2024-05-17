@@ -44,7 +44,7 @@ public class Zhaopin {
         List<String> list = new ArrayList<>();
         findBatch("joblist-box__item clearfix").forEach(o -> {
             // 检查黑名单
-            if (!isInBlackList(find(o, "companyinfo__top").getText()))
+            if (!isInBlackList(o.getText()))
                 list.add(find(o, "jobinfo__name").getAttribute("href"));
         });
 
