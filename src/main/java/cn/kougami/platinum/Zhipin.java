@@ -40,14 +40,15 @@ public class Zhipin {
         driver.get(url);
         wait("job-card-body clearfix");
 
-        List<WebElement> list = new ArrayList<>();
-        findBatch("job-card-body").forEach(o -> list.add(o));
-
-        for (WebElement i: list) {
+        List<String> list = new ArrayList<>();
+        findBatch("job-card-body").forEach(o -> {
             // 检查黑名单
-            if (isInBlackList(find(i, "company-name").getText())) continue;
+            if (!isInBlackList(find(o, "company-name").getText()))
+                list.add(find(o, "job-card-left").getAttribute("href"));
+        });
 
-            driver.get(find(i, "job-card-left").getAttribute("href"));
+        for (String i: list) {
+            driver.get(i);
             wait("btn-startchat");
             WebElement button = find("btn-startchat");
             if (button.getText().equals("立即沟通")) {
