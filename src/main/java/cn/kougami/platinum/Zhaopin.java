@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class Zhaopin {
+public class Zhaopin extends Thread {
     private String loginUrl = "https://passport.zhaopin.com/login";
     private String baseUrl = "https://sou.zhaopin.com/?kw=%s&jl=%s&p=";
     private List<String> blackList;
@@ -25,13 +25,16 @@ public class Zhaopin {
         this.blackList = blackList;
     }
 
-    public void start() {
+    @Override
+    public void run() {
         log.info("开始智联招聘投递简历");
         driver = new ChromeDriver();
-        webDriverWait = new WebDriverWait(driver, 10);
+        webDriverWait = new WebDriverWait(driver, 3600);
         login();
-        for (int page = 1; page <= 10; page ++)
-            if (!chat(baseUrl + page)) break;
+//        for (int page = 1; page <= 10; page ++)
+//            if (!chat(baseUrl + page)) break;
+        while (true)
+            if (!chat(baseUrl + 1)) break;
         log.info("投递结束");
         driver.close();
     }
@@ -77,13 +80,10 @@ public class Zhaopin {
         wait("zppp-panel-normal-bar__img");
         driver.findElementByClassName("zppp-panel-normal-bar__img").click();
         log.info("等待扫码登陆...");
-        wait("job-recommend__title", 3600);
+        wait("job-recommend__title");
     }
     private void wait(String className) {
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='" + className + "']")));
-    }
-    private void wait(String className, Integer timeout) {
-        new WebDriverWait(driver, timeout).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='" + className + "']")));
     }
     private WebElement find(String className) {
         return driver.findElement(By.cssSelector("[class*='" + className + "']"));

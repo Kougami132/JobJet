@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class Zhipin {
+public class Zhipin extends Thread {
     private String loginUrl = "https://www.zhipin.com/web/user/?ka=header-login";
     private String baseUrl = "https://www.zhipin.com/web/geek/job?scale=301,302,303,304&experience=108,102,101,103&degree=202,203&query=%s&city=%s&page=";
     private List<String> blackList;
@@ -24,13 +24,16 @@ public class Zhipin {
         this.blackList = blackList;
     }
 
-    public void start() {
+    @Override
+    public void run() {
         log.info("开始BOSS直聘打招呼");
         driver = new ChromeDriver();
-        webDriverWait = new WebDriverWait(driver, 10);
+        webDriverWait = new WebDriverWait(driver, 3600);
         login();
-        for (int page = 1; page <= 10; page ++)
-            if (!chat(baseUrl + page)) break;
+//        for (int page = 1; page <= 10; page ++)
+//            if (!chat(baseUrl + page)) break;
+        while (true)
+            if (!chat(baseUrl + 1)) break;
         log.info("打招呼结束");
         driver.close();
     }
@@ -73,13 +76,10 @@ public class Zhipin {
         wait("btn-sign-switch");
         driver.findElementByClassName("btn-sign-switch").click();
         log.info("等待扫码登陆...");
-        wait("recommend-job-btn", 3600);
+        wait("recommend-job-btn");
     }
     private void wait(String className) {
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='" + className + "']")));
-    }
-    private void wait(String className, Integer timeout) {
-        new WebDriverWait(driver, timeout).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='" + className + "']")));
     }
     private WebElement find(String className) {
         return driver.findElement(By.cssSelector("[class*='" + className + "']"));
